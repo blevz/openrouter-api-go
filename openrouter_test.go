@@ -3,18 +3,21 @@ package openrouterapigo_test
 import (
 	"context"
 	"fmt"
+	"os"
 	"testing"
 
 	openrouterapigo "github.com/wojtess/openrouter-api-go"
 )
 
+var OR_KEY = os.Getenv("OR_KEY")
+
 func TestFetchChatCompletions(t *testing.T) {
-	client := openrouterapigo.NewOpenRouterClient("YOUR_TOKEN")
+	client := openrouterapigo.NewOpenRouterClient(OR_KEY)
 
 	request := openrouterapigo.Request{
 		Model: "meta-llama/llama-3.2-1b-instruct",
 		Messages: []openrouterapigo.MessageRequest{
-			{openrouterapigo.RoleUser, "Hi", "", ""},
+			{openrouterapigo.RoleUser, "Hi", "", "", ""},
 		},
 	}
 
@@ -27,12 +30,12 @@ func TestFetchChatCompletions(t *testing.T) {
 }
 
 func TestFetchChatCompletionsStreaming(t *testing.T) {
-	client := openrouterapigo.NewOpenRouterClient("YOUR_TOKEN")
+	client := openrouterapigo.NewOpenRouterClient(OR_KEY)
 
 	request := openrouterapigo.Request{
 		Model: "meta-llama/llama-3.2-1b-instruct",
 		Messages: []openrouterapigo.MessageRequest{
-			{openrouterapigo.RoleUser, "Hello", "", ""},
+			{openrouterapigo.RoleUser, "Hello", "", "", ""},
 		},
 		Stream: true,
 	}
@@ -67,7 +70,7 @@ func TestFetchChatCompletionsStreaming(t *testing.T) {
 }
 
 func TestFetchChatCompletionsAgentStreaming(t *testing.T) {
-	client := openrouterapigo.NewOpenRouterClient("YOUR_TOKEN")
+	client := openrouterapigo.NewOpenRouterClient(OR_KEY)
 	agent := openrouterapigo.NewRouterAgent(client, "meta-llama/llama-3.2-1b-instruct", openrouterapigo.RouterAgentConfig{
 		Temperature: 0.7,
 		MaxTokens:   100,
@@ -108,7 +111,7 @@ func TestFetchChatCompletionsAgentStreaming(t *testing.T) {
 }
 
 func TestFetchChatCompletionsAgentSimpleChat(t *testing.T) {
-	client := openrouterapigo.NewOpenRouterClient("YOUR_TOKEN")
+	client := openrouterapigo.NewOpenRouterClient(OR_KEY)
 	agent := openrouterapigo.NewRouterAgentChat(client, "meta-llama/llama-3.2-1b-instruct", openrouterapigo.RouterAgentConfig{
 		Temperature: 0.0,
 		MaxTokens:   100,
@@ -118,6 +121,7 @@ func TestFetchChatCompletionsAgentSimpleChat(t *testing.T) {
 	agent.Chat("What I asked you to rember?")
 
 	for _, msg := range agent.Messages {
+		t.Logf("msg: %v", msg)
 		content, ok := msg.Content.(string)
 		if ok {
 			t.Logf(string(msg.Role) + ": " + string(content))
