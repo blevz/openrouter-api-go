@@ -51,6 +51,7 @@ type ProviderPreferences struct {
 type MessageRequest struct {
 	Role       MessageRole `json:"role"`
 	Content    interface{} `json:"content"` // Can be string or []ContentPart
+	Reasoning  string      `json:"reasoning,omitempty"`
 	Name       string      `json:"name,omitempty"`
 	ToolCallID string      `json:"tool_call_id,omitempty"`
 }
